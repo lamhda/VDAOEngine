@@ -44,13 +44,13 @@ public class PCAMethodPQSQ extends PCAMethod {
     /*
      * Define the potential (TrimmedLinear, Quadratic, Sqrt)
      */
-    PCAMethodPQSQ pca = new PCAMethodPQSQ();
-    pca.PQSQpotential = PQSQPotential.getTrimmedLinearPQSQPotential(vd.massif);
+    //PCAMethodPQSQ pca = new PCAMethodPQSQ();
+    //pca.PQSQpotential = PQSQPotential.getTrimmedLinearPQSQPotential(vd.massif);
     //pca.PQSQpotential = PQSQPotential.getTrimmedQuadraticPQSQPotential(vd.massif);
     //pca.PQSQpotential = PQSQPotential.getTrimmedSqrtPQSQPotential(vd.massif);
 
     // For comparison with normal PCA, comment last two lines and uncomment this one
-    //PCAMethod pca = new PCAMethod();
+    PCAMethod pca = new PCAMethod();
     
     PCAMethod.verboseMode = false;
 
@@ -60,17 +60,17 @@ public class PCAMethodPQSQ extends PCAMethod {
      * central point  is in pca.getBasis().a0, basis vectors are in pca.getBasis().basis, point projections are in pca.pointProjections)
      */
     
-    pca.setDataSet(vd);
+    pca.setData(vd.massif);
     Date tm = new Date();
-    pca.calcBasis(5);
+    pca.calcBasis(4);
     //System.out.println("Time spent: "+((new Date()).getTime()-tm.getTime())+"/ time to split: "+pca.timeToSplitInIntervals);
     System.out.println("Time spent: "+((new Date()).getTime()-tm.getTime()));
 
     System.out.println(pca.getBasis());
-    System.out.print("Point projections:\t");
+    /*System.out.print("Point projections:\t");
     for(int i=0;i<vd.pointCount;i++)
     	System.out.print(pca.pointProjections[0][i]+"\t");
-    System.out.println("\n");
+    System.out.println("\n");*/
 
     /*
      * TODO: This function should be better adapted to non-orthogonal basis + non-quadratic PQSQ-based variance
@@ -100,6 +100,7 @@ public class PCAMethodPQSQ extends PCAMethod {
 	  int pointNum = Dat.length;
 	  double dDat[][] = new double[dimen][pointNum];
 	  pointProjections = new double[dimen][pointNum];
+	  double Center[] = new double[dimen];
 
 	  for(int i=0;i<dimen;i++) for(int j=0;j<pointNum;j++) dDat[i][j]=Dat[j][i];
 
@@ -107,6 +108,7 @@ public class PCAMethodPQSQ extends PCAMethod {
 		  float x[] = new float[pointNum];
 		  for(int j=0;j<pointNum;j++) x[j]=(float)dDat[i][j];
 		  Shift[i] = PQSQpotential.getMean(x,i);
+		  Center[i] = Shift[i]; 
 	  }
 
 	  if(verboseMode)
@@ -137,13 +139,13 @@ public class PCAMethodPQSQ extends PCAMethod {
 		  double s1 = 0f;
 		  double s2 = 0f;
 		  for(int k=0;k<dimen;k++){
-			  s1+=(dDat[k][j]-Shift[k])*Comp[k];
+			  s1+=(dDat[k][j]-Center[k])*Comp[k];
 			  s2+=Comp[k]*Comp[k];
 		  }
 		  tempProjections[j] = s1/s2;
 	  }
 	  
-	  calculateFirstPC(dDat,Comp,Shift);
+	  calculateFirstPC(dDat,Comp,Center);
 	  
 	  for(int j=0;j<pointNum;j++)
 		  pointProjections[i][j] = tempProjections[j];
@@ -155,15 +157,17 @@ public class PCAMethodPQSQ extends PCAMethod {
 		  double s1 = 0f;
 		  double s2 = 0f;
 		  for(int k=0;k<dimen;k++){
-			  s1+=(dDat[k][j]-Shift[k])*Comp[k];
+			  s1+=(dDat[k][j]-Center[k])*Comp[k];
 			  s2+=Comp[k]*Comp[k];
 		  }
 		  tempProjections[j] = s1/s2;
 	  }
 	  
+	  if(i>0) for(int k=0; k<dimen; k++) Center[k]=0;
+	  
 	  for(int j=0; j<pointNum; j++){
-	    for(int k=0; k<dimen; k++) dDat[k][j] = dDat[k][j]-Shift[k]-tempProjections[j]*Comp[k];
-	     }
+	    for(int k=0; k<dimen; k++) dDat[k][j] = dDat[k][j]-Center[k]-tempProjections[j]*Comp[k];
+	  }
 	  
 	  }
 	  if(verboseMode)

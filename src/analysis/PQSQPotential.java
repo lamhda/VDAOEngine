@@ -91,12 +91,12 @@ public class PQSQPotential {
 	/*
 	 * Function to pre-compute A and B coefficients for PQSQ potential, based on a majorating function and interval definitions
 	 */
-	public void computeABCoefficients(float x[][], VMathFunction f, float functionParameters[]){
+	public void computeABCoefficients(VMathFunction f, float functionParameters[]){
 		
-		Acoefficients = new float[x[0].length][numberOfIntervals+1];
-		Bcoefficients = new float[x[0].length][numberOfIntervals+1];
+		Acoefficients = new float[intervals.length][numberOfIntervals+1];
+		Bcoefficients = new float[intervals.length][numberOfIntervals+1];
 
-		for(int k=0;k<x[0].length;k++){
+		for(int k=0;k<intervals.length;k++){
 			for(int i=0;i<intervals[0].length-1;i++){
 				float xk = intervals[k][i];
 				float xk1 = intervals[k][i+1];
@@ -108,6 +108,10 @@ public class PQSQPotential {
 			Acoefficients[k][intervals[0].length-1] = 0f;
 			Bcoefficients[k][intervals[0].length-1] = f.getValue(intervals[k][intervals[0].length-1],functionParameters);
 		}
+	}
+	
+	public void computeABCoefficients(){	
+		computeABCoefficients(MajoratingFunction, functionParameters);
 	}
 	
 	/*
@@ -217,7 +221,7 @@ public class PQSQPotential {
 		PQSQPotential pqsq = new PQSQPotential();
 		pqsq.defineIntervals(x);
 		pqsq.MajoratingFunction = new VSimpleFunctions(). new VAbsFunction();
-		pqsq.computeABCoefficients(x, pqsq.MajoratingFunction, null);
+		pqsq.computeABCoefficients(pqsq.MajoratingFunction, null);
 		return pqsq;
 	}
 	/*
@@ -227,7 +231,7 @@ public class PQSQPotential {
 		PQSQPotential pqsq = new PQSQPotential();
 		pqsq.defineIntervals(x);
 		pqsq.MajoratingFunction = new VSimpleFunctions(). new VQuadraticFunction();
-		pqsq.computeABCoefficients(x, pqsq.MajoratingFunction, null);
+		pqsq.computeABCoefficients(pqsq.MajoratingFunction, null);
 		return pqsq;
 	}
 	/*
@@ -239,7 +243,7 @@ public class PQSQPotential {
 		pqsq.MajoratingFunction = new VSimpleFunctions(). new VPolynomialFunction();
 		float pars[] = {0,1,1};
 		pqsq.functionParameters = pars;
-		pqsq.computeABCoefficients(x, pqsq.MajoratingFunction, pars);
+		pqsq.computeABCoefficients(pqsq.MajoratingFunction, pars);
 		return pqsq;
 	}
 	/*
@@ -249,7 +253,7 @@ public class PQSQPotential {
 		PQSQPotential pqsq = new PQSQPotential();
 		pqsq.defineIntervals(x);
 		pqsq.MajoratingFunction = new VSimpleFunctions(). new VSqrtFunction();
-		pqsq.computeABCoefficients(x, pqsq.MajoratingFunction, null);
+		pqsq.computeABCoefficients(pqsq.MajoratingFunction, null);
 		return pqsq;
 	}
 	
