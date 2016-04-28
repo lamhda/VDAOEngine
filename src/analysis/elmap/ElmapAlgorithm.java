@@ -220,6 +220,11 @@ public class ElmapAlgorithm{
 		grid = new Curve(gridsize1,data.coordCount);
 		setGrid(grid);
     }
+    if(gridtype.equals("circle")){
+        grid = new CircleGrid(gridsize1,data.coordCount);
+        setGrid(grid);
+    }
+    
     
 //*************************************************************************************************************************
 //                                ready for new grid type........

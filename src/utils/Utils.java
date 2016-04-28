@@ -245,6 +245,17 @@ public static VDataTable PrepareTableForVidaExpert(VDataTable vt){
 	return vt;
 }
 
+public static void writeMassif1DToFile(int massif[], String fn){
+	try{
+		FileWriter fw = new FileWriter(fn);
+		for(int i=0;i<massif.length;i++)
+			fw.write(massif[i]+"\n");
+		fw.close();
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+}
+
 
 
 }
