@@ -253,9 +253,10 @@ public static VDataTable extractClass(VDataTable vt, int descrNumber, String inf
   return res;
 }
 
-public static VDataTable SelectColumns(VDataTable vt, Vector columns){
+public static VDataTable SelectColumns(VDataTable vt, Vector<String> columns){
   VDataTable res = new VDataTable();
-  Vector v = columns;
+  Vector v = new Vector<String>();
+  for(String s: columns)if(vt.fieldNumByName(s)>=0) v.add(s);
   res.rowCount = vt.rowCount;
   res.colCount = v.size();
   res.stringTable = new String[res.rowCount][res.colCount];

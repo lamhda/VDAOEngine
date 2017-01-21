@@ -368,8 +368,6 @@ public class Graph extends Object{
 		  setDefaultElasticityCoeff(1,coeff);
       }
 	  
-	  
-	  
 	  public GraphElement[] getAllSimpleElements(){
 		  GraphElement res[] = new GraphElement[Nodes.size()+Edges.size()+Stars.size()];
 		  int k=0;
@@ -831,7 +829,7 @@ public class Graph extends Object{
 							  if(e.getTarget().key.equals(id))
 								  s.neighbours.add(e.getSource());
 						  }
-						  Stars.add(s);
+						  addStar(s);
 					  }
 				  }}
 			  }

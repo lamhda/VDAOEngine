@@ -767,7 +767,7 @@ labelField, String fn, boolean conserveOrder) throws Exception{
 			boolean isNumerical = true;
 			for(int j=0;j<vt.rowCount;j++){
 				String s = vt.stringTable[j][i].trim();
-				if(s.equals("\"\"")||s.equals("NA")||s.equals("")||s.equals("_")){
+				if(s.equals("\"\"")||s.equals("NA")||s.equals("N/A")||s.equals("")||s.equals("_")){
 					s = "@";
 					vt.stringTable[j][i] = s;
 				}else{

@@ -9,6 +9,7 @@ import vdaoengine.TableUtils;
 import vdaoengine.analysis.elmap.ElmapAlgorithmEpoch;
 import vdaoengine.data.VDataSet;
 import vdaoengine.data.VDataTable;
+import vdaoengine.data.VStatistics;
 import vdaoengine.data.io.VDatReadWrite;
 import vdaoengine.utils.OptionParser;
 import vdaoengine.utils.VSimpleProcedures;
@@ -22,11 +23,13 @@ public class ComputePrincipalGraph{
 	public ElasticEnergyOptimization elo = null;
 	
 	public BaseOptimizationAlgorithm alg = null;
-
 	
 	public Graph graph = null;
 	
 	public int maxnumnodes = -1;
+	
+	public float initNodePositions[][] = null;
+	public int initEdges[][] = null;
 	
 	/**
 	 * @param args
@@ -35,6 +38,8 @@ public class ComputePrincipalGraph{
 		try{
 			
 			vdaoengine.data.io.VDatReadWrite.useQuotesEverywhere = false;
+			String fileInitNodePositions = null;
+			String fileInitEdges = null;
 			
 			
 			if(args.length==0){
@@ -88,6 +93,14 @@ public class ComputePrincipalGraph{
 				normalize = s.equals("1");
 			if ((s = options.stringOption("maxnumnodes", "maximum number of nodes in the graph")) != null)
 				maxnumnodes = Integer.parseInt(s);
+			if ((s = options.stringOption("initNodes", "file with node positions for initializing the graph")) != null){
+				fileInitNodePositions = s;
+			}
+			if ((s = options.stringOption("initEdges", "file with edge description in the format <node1><tab><node2> per line for initializing the graph")) != null){
+				fileInitEdges = s;
+			}
+				
+			
 			options.done();
 			
 			ComputePrincipalGraph cpg = new ComputePrincipalGraph();
@@ -101,7 +114,7 @@ public class ComputePrincipalGraph{
 			cpg.config.readFile(configFile.getAbsolutePath(), algorithmNumber);
 			
 			VDataTable vt = null;
-			if(txtFile!=null){
+			if(txtFile!=null){	
 				vt = VDatReadWrite.LoadFromSimpleDatFile(txtFile.getAbsolutePath(), true, "\t");
 				TableUtils.findAllNumericalColumns(vt);
 				datFile = txtFile;
@@ -113,7 +126,23 @@ public class ComputePrincipalGraph{
 			else
 				cpg.dataset = VSimpleProcedures.SimplyPreparedDataset(vt, -1);
 
+			cpg.dataset.calcStatistics();
+			System.out.println("Total standart deviation = "+cpg.dataset.simpleStatistics.totalDispersion);
+			
+			
 			cpg.maxnumnodes = maxnumnodes;
+			
+			if(fileInitNodePositions!=null)if(fileInitEdges!=null){
+				System.out.println("Using pre-defined graph configuration...");
+				VDataTable nodepos = VDatReadWrite.LoadFromSimpleDatFile(fileInitNodePositions, false, "\t");
+				cpg.initNodePositions = VSimpleProcedures.SimplyPreparedDatasetWithoutNormalization(nodepos, -1).massif;
+				cpg.initEdges = VDatReadWrite.LoadIntegerMassifTabDelimited(fileInitEdges);
+				System.out.println("Number of nodes="+cpg.initNodePositions.length);
+				System.out.println("Number of edges="+cpg.initEdges.length);
+				cpg.setPrimitiveGraphByNodesAndEdges(cpg.initNodePositions, cpg.initEdges);
+				cpg.config.initStrategy = -1;
+			}
+			
 			cpg.compute();
 			
 			String prefix = datFile.getAbsolutePath().substring(0,datFile.getAbsolutePath().length()-4);
@@ -150,17 +179,18 @@ public class ComputePrincipalGraph{
 		
 		dataset.calcStatistics();
 		//System.out.println("Variation = "+dataset.simpleStatistics.totalDispersion);
-		dataset.simpleStatistics.calculate();
-		//System.out.println("Variation = "+dataset.simpleStatistics.totalDispersion);
+		//dataset.simpleStatistics.calculate();
+		//System.out.println("Total dispersion = "+dataset.simpleStatistics.totalDispersion);
 		
 		
-		graph = new Graph();
-		
-		alg = new BaseOptimizationAlgorithm(dataset);
 		//alg.verbose = false;
 		
 		//alg.setElementFeeExponential(1e-4f, 3f);
 		//alg.setElementFeeLinear(0.3e-4f, 1f);
+		if(graph==null){
+			graph = new Graph();
+		}
+		alg = new BaseOptimizationAlgorithm(dataset);
 		alg.setGraph(graph);
 	
 		alg.parameters.initStrategy = config.initStrategy;
@@ -178,7 +208,9 @@ public class ComputePrincipalGraph{
 			defineGrammarType(ep);
 			
 			graph.setDefaultEdgeElasticityCoeff(ep.EP);
-			graph.setDefaultElasticityCoeffs(ep.RP);		
+			graph.setDefaultElasticityCoeffs(ep.RP);
+			graph.setElasticityCoeffs(1, ep.EP);
+			for(int k=2;k<graph.MAX_STAR_DEGREE;k++) graph.setElasticityCoeffs(k, ep.RP);
 			
 			if(maxnumnodes>0)
 				alg.parameters.maxNumberOfNodes += maxnumnodes;
@@ -329,6 +361,13 @@ public class ComputePrincipalGraph{
 		dataset.massif = massif;
 		dataset.pointCount = numpoints;
 		dataset.coordCount = coordnum;
+	}
+	
+	public void setPrimitiveGraphByNodesAndEdges(float nodes[][], int edges[][]){
+		graph = new Graph();
+		Utils.setNodesForGraph(graph, nodes);
+		Utils.setEdgesForGraph(graph, edges);
+		graph.defineStarsFromPrimitiveGraphStructure();
 	}
 
 }

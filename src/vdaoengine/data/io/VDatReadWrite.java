@@ -38,6 +38,78 @@ public class VDatReadWrite {
     return Tabl;
   }
 
+  public static VDataTable LoadFromSimpleDatFile(Reader reader, boolean firstLineFNames, String delim, int mark){
+
+  VDataTable vt = new VDataTable();
+	  
+  String s = null;
+  try{
+  LineNumberReader lri = new LineNumberReader(reader);
+  
+  lri.mark(mark);
+  //lri.mark(1);
+  s = lri.readLine();
+  StringTokenizer sti = new StringTokenizer(s,delim);
+  vt.colCount = sti.countTokens();
+  vt.fieldNames = new String[vt.colCount];
+  vt.fieldTypes = new int[vt.colCount];
+  if(!firstLineFNames){
+    for(int i=0;i<vt.colCount;i++) vt.fieldNames[i] = "N"+(i+1);
+  }else{
+    int k=0;
+    while(sti.hasMoreTokens()){
+    	vt.fieldNames[k] = cutQuotes(sti.nextToken());
+      k++;
+    }
+  }
+  int cr = 0;
+  
+  
+  while(lri.readLine()!= null) cr++;
+  if(!firstLineFNames) cr++;
+  vt.rowCount = cr;
+  //System.out.println("Rows number = "+cr);
+  //lri.close(); 
+  lri.reset();
+  //lri.mark(0);
+  //lri = new LineNumberReader(reader);
+
+  vt.stringTable = new String[vt.rowCount][vt.colCount];
+  //LineNumberReader lr = new LineNumberReader(reader);
+  if(firstLineFNames){
+    lri.readLine();
+    //rowCount = rowCount-1;
+  }
+  
+  int i=0;
+  
+  while ( ((s=lri.readLine()) != null)&&(i<=vt.rowCount) )
+     {
+	 //System.out.println(s);
+     PowerfulTokenizer st = new PowerfulTokenizer(s,delim);
+     int j=0;
+     while ((st.hasMoreTokens())&&(j<vt.colCount)) {
+        String ss = st.nextToken();
+        if (ss.length()>1)
+        if (ss.charAt(0)=='\"')
+           ss = new String(ss.substring(1,ss.length()-1));
+        vt.stringTable[i][j] = ss;
+        j++;
+        }
+     i++;
+     }
+  
+  
+  }
+  catch (Exception e) { 
+	  System.out.println("Error in VDatReadWrite: "+e.toString()+"\n"+s);
+	  return null;
+	  }
+  return vt;
+  
+  }
+  
+  
   public static VDataTable LoadFromVDatReader(Reader rr, String tabName) throws Exception{
   VDataTable Tabl = new VDataTable();
 
@@ -202,7 +274,7 @@ public class VDatReadWrite {
       Integer.parseInt(sti.nextToken());
       Integer.parseInt(sti.nextToken());
       if(intvalues){
-        s = lri.readLine();
+        //s = lri.readLine();
         sti = new StringTokenizer(s,delim);
       }
     }catch(Exception e){
@@ -223,8 +295,8 @@ public class VDatReadWrite {
   //System.out.println(Tabl.rowCount+"\t"+lr.readLine());
   while ( ((s=lr.readLine()) != null)&&(i<rowCount) )
      {
-	 if(i==(int)((float)i*0.001)*1000)
-		 System.out.print(i+"("+Utils.getUsedMemoryMb()+")\t");
+	 //if(i==(int)((float)i*0.001)*1000)
+	 //	 System.out.print(i+"("+Utils.getUsedMemoryMb()+")\t");
 	 StringTokenizer st = new StringTokenizer(s,delim);
      //System.out.println(st.countTokens());
      int j=0;
@@ -249,7 +321,14 @@ public class VDatReadWrite {
   public static VDataTable LoadFromSimpleDatFile(String FileName,boolean firstLineFNames,String delim){
 	  return LoadFromSimpleDatFile(FileName,firstLineFNames,delim, false);
   }
-    
+
+  public static VDataTable LoadFromSimpleDatFileString(String text,boolean firstLineFNames,String delim){
+	  try{
+		  return LoadFromSimpleDatFile(new StringReader(text),firstLineFNames,delim,1000000000);		  
+	  }catch (Exception e) { System.out.println("Error in VDatReadWrite: "+e.toString()); return null; }
+  }
+  
+
   public static VDataTable LoadFromSimpleDatFile(String FileName,boolean firstLineFNames,String delim, boolean showProgress){
 	  VDataTable Tabl = new VDataTable();
 
@@ -338,6 +417,7 @@ public class VDatReadWrite {
 	        }
 	     i++;
 	     }
+	     lr.close();
 	  }
 	  catch (Exception e) { System.out.println("Error in VDatReadWrite: "+e.toString()+"\n"+"String("+(i+1)+"): "+s);
 	  e.printStackTrace();
@@ -349,6 +429,8 @@ public class VDatReadWrite {
 	  Tabl.name = new String(FileName);
 	  return Tabl;
 	  }
+
+
   
 
   public static VDataSet LoadFileWithFirstIDColumn(String fn, boolean firstLineColumnNames) throws Exception{
@@ -673,6 +755,7 @@ public class VDatReadWrite {
       mem = (long)(1e-6f*mem);
       System.out.println("Used memory "+mem+"M");
   }
+
 
 
 }

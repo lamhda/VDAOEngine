@@ -24,7 +24,7 @@ public class Utils {
 			Node n1 = graph.Nodes.get(edgeNodePairs[i][0]);
 			Node n2 = graph.Nodes.get(edgeNodePairs[i][1]);
 			Edge e = new Edge(n1,n2);
-			graph.Edges.add(e);
+			graph.addEdge(e);
 		}
 	}
 	

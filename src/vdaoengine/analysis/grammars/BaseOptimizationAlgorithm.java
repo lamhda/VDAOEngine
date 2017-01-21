@@ -15,6 +15,7 @@ public class BaseOptimizationAlgorithm {
 	public static int INIT_TWO_NODES_ALONG_PC1 = 0;
 	public static int INIT_TWO_POINTS_IN_DENSEST_CLUSTER = 1;
 	public static int INIT_FOUR_POINTS_CLOSED_LINE_PC12 = 2;	
+	public static int INIT_PREDEFINED_CONFIGURATION = -1;
 	public static int CONVERGENCE_MAXNUMNODES = 0;
 	public static int CONVERGENCE_APPROXIMATION_ERROR = 1;
 	
@@ -176,7 +177,6 @@ public class BaseOptimizationAlgorithm {
 			Edge e = graph.addEdge(n1,n2);
 		}
 		if(parameters.initStrategy==INIT_FOUR_POINTS_CLOSED_LINE_PC12){
-			// To do
 			PCAMethod pca = new PCAMethod();
 			pca.setDataSet(dataset);
 			pca.calcBasis(2);
@@ -225,6 +225,10 @@ public class BaseOptimizationAlgorithm {
 			graph.addEdge(n3,n4);
 			graph.addEdge(n4,n1);
 			graph.defineStarsFromPrimitiveGraphStructure();
+		}
+		if(parameters.initStrategy==INIT_PREDEFINED_CONFIGURATION){
+			// graph = graph should be defined elsewhere
+			//System.out.println("Elasticity = "+graph.Edges.get(0).elasticity);
 		}
 	}
 	

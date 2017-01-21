@@ -129,24 +129,23 @@ public class PCAMethodFixedCenter extends PCAMethod {
        }
     }
 
-  Ord1[0]=1;
+  //System.out.println("["+Vector[0]+"\t"+Vector[1]+"\t"+Vector[2]+"...]");
+  
+  //Ord1[0]=1;
   double sp=0;
-  for (int i=0; i<dimen; i++) sp+=Vector[i]*Ord1[i];
-  if (sp<0) for (int i=0; i<dimen; i++) Vector[i]*=-1;
+  //for (int i=0; i<dimen; i++) sp+=Vector[i]*Ord1[i];
   
-  
-  tempProjections = new double[getDataSet().pointCount];
-  for(j=0;j<getDataSet().pointCount;j++){
-  	  double s1 = 0f;
-  	  double s2 = 0f;
-  	  for(int k=0;k<dimen;k++){
-  		  s1+=dDat[k][j]*Vector[k];
-  		  s2+=Vector[k]*Vector[k];
-  	  }
-  	  tempProjections[j] = s1/s2;
+  tempProjections = computeProjections(dDat, Vector, dimen, getDataSet().pointCount);
+  for (int i=0; i<getDataSet().pointCount; i++) sp+=tempProjections[i];
+  if (sp<0){
+	  for (int i=0; i<dimen; i++) Vector[i]*=-1;
+	  tempProjections = computeProjections(dDat, Vector, dimen, getDataSet().pointCount);
   }
   
+  //System.out.println("["+Vector[0]+"\t"+Vector[1]+"\t"+Vector[2]+"...]");
+  
   }
+  
 
   public void PCIteration(double[][] dDat, double[] Vector){
   int dimen = Vector.length;

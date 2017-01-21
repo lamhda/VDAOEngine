@@ -35,6 +35,8 @@ public Vector points = new Vector();
 
 public boolean rememberPoints = true;
 
+public boolean alreadyCalculated = false;
+
   public VStatistics(int dimen) {
   mins = new float[dimen];
   maxs = new float[dimen];
@@ -47,23 +49,45 @@ public boolean rememberPoints = true;
   pointsNumber = 0;
   totalDispersion = 0;
   }
+  
+  public void initsums(){
+	  for(int i=0;i<dimension;i++)
+	   {
+	   means[i] = 0;
+	   stdevs[i] =0;
+	   stdevs0[i] =0;   
+	   skews[i] =0;
+	   mins[i] = +1e10f;
+	   maxs[i] = -1e10f;
+	   nums[i] = 0;
+	   pointsNumber = 0;
+	   }
+  }
+  
+  public void recomputesums(){
+	  Vector<float[]> temppoints = new Vector<float[]>();
+	  for(int i=0;i<points.size();i++) temppoints.add((float[])points.get(i));
+	  points.clear();
+	  for(int i=0;i<temppoints.size();i++){
+		  this.addNewPoint((float[])temppoints.get(i));
+	  }
+  }
 
   public void initialize(){
-  for(int i=0;i<dimension;i++)
-   {
-   means[i] = 0;
-   stdevs[i] =0;
-   stdevs0[i] =0;   
-   skews[i] =0;
-   mins[i] = +1e10f;
-   maxs[i] = -1e10f;
-   nums[i] = 0;
-   pointsNumber = 0;
-   }
+   initsums();
    points.clear();
   }
 
   public void calculate(){
+	  
+  if(alreadyCalculated)if(rememberPoints)if(points.size()>0){
+	  initsums();
+	  recomputesums();
+	  alreadyCalculated = false;
+  }
+  
+  if(!alreadyCalculated){
+	  
   for(int i=0;i<dimension;i++)
    {
    //System.out.println(means[i]+"\t"+stdevs[i]+"\t"+skews[i]);
@@ -90,7 +114,10 @@ public boolean rememberPoints = true;
 		totalSDVtozero+=stdevs0[j]*stdevs0[j];
 	}
 	totalSDVtozero = (float)Math.sqrt(totalSDVtozero);
-    
+  
+	alreadyCalculated = true;
+   }
+	
   }
 
   public void addNewPoint(float p[]){
