@@ -667,7 +667,7 @@ public class Graph extends Object{
 	  public float[] projectPoint(float point[], int projectionType){
 
 		  float res[] = new float[point.length];
-		  float r, minr = 10000000f;
+		  float r, minr = Float.MAX_VALUE;
 		  int minj = -1;
 		                  for(int j=0;j<getNodeNum();j++){ 
 		                               r = VVectorCalc.SquareEuclDistanceShift(NodeArrayCopy,j*getDimension(),point,getDimension());
@@ -716,7 +716,7 @@ public class Graph extends Object{
 
 		  public float[] projectPointGap(float point[], int projectionType){
 			  float res[] = new float[point.length];
-			  float r, minr = 10000000f;
+			  float r, minr = Float.MAX_VALUE;
 			  int minj = -1;
 			                  for(int j=0;j<getNodeNum();j++){ 
 			                               r = VVectorCalc.SquareEuclDistanceShiftGap(NodeArrayCopy,j*getDimension(),point,getDimension());
@@ -754,7 +754,7 @@ public class Graph extends Object{
 
 
 		  public int getClosestNode(float point[]){
-		  float r, minr = 10000000f;
+		  float r, minr = Float.MAX_VALUE;
 		  int minj = -1;
 		                  for(int j=0;j<getNodeNum();j++){
 		                               r = VVectorCalc.SquareEuclDistanceShift(NodeArrayCopy,j*getDimension(),point,getDimension());
@@ -764,7 +764,7 @@ public class Graph extends Object{
 		  }
 
 		  public int getClosestNodeGap(float point[]){
-		  float r, minr = 10000000f;
+		  float r, minr = Float.MAX_VALUE;
 		  int minj = -1;
 		                  for(int j=0;j<getNodeNum();j++){
 		                               r = VVectorCalc.SquareEuclDistanceShiftGap(NodeArrayCopy,j*getDimension(),point,getDimension());

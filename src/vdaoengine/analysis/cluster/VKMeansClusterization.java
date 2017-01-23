@@ -26,7 +26,7 @@ public int iterationsNumber = 0;
 
   public void doClusterization(VDataSet ds) {
   initialize(ds);
-  double eps = 10000000;
+  double eps = Double.MAX_VALUE;
   iterationsNumber = 0;
   while (eps>clusterizationQuality)
     {

@@ -70,7 +70,7 @@ int dimension = 0;
   for(int k=0; k<ds.getPointCount(); k++)
   {
   int mini = -1;
-  double mind = 100000000;
+  double mind = Double.MAX_VALUE;
   double d = 0;
   for(int i=0; i<centroids.size(); i++)
     {
@@ -139,7 +139,7 @@ int dimension = 0;
 
   public int calculateClosestCentroid(float[] v){
   int mini = -1;
-  double mind = 100000000;
+  double mind = Double.MAX_VALUE;
   double d = 0;
   double centr[];
   for(int i=0; i<centroids.size(); i++)
@@ -153,7 +153,7 @@ int dimension = 0;
 
   public int calculateClosestCentroid(float[] v, Vector ExceptList){
   int mini = -1;
-  double mind = 100000000;
+  double mind = Double.MAX_VALUE;
   double d = 0;
   double centr[];
   for(int i=0; i<centroids.size(); i++)

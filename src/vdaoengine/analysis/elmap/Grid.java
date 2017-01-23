@@ -343,14 +343,14 @@ public static int PROJECTION_CLOSEST_POINT = 1;
   public float[] projectPoint(float point[], int projectionType){
 
   float res[] = new float[3];
-  float r, minr = 10000000f;
+  float r, minr = Float.MAX_VALUE;
   int minj = -1;
                   for(int j=0;j<nodesNum;j++){ 
                                r = VVectorCalc.SquareEuclDistanceShift(NodesCopy,j*dimension,point,dimension);
                           if(r<minr){ minr=r; minj = j; }
                   }
                   if(projectionType==PROJECTION_CLOSEST_POINT){
-                  float u = 0f,v = 0f,d,mind = 10000000f, minu = 0f, minv = 0f;
+                  float u = 0f,v = 0f,d,mind = Float.MAX_VALUE, minu = 0f, minv = 0f;
                   int mini = -1;
                   for(int i=0;i<Triangles.length;i++){
                           if((Triangles[i][0]==minj)||(Triangles[i][1]==minj)||(Triangles[i][2]==minj)){
@@ -401,14 +401,14 @@ public static int PROJECTION_CLOSEST_POINT = 1;
   public float[] projectPointGap(float point[], int projectionType){
 
   float res[] = new float[3];
-  float r, minr = 10000000f;
+  float r, minr = Float.MAX_VALUE;
   int minj = -1;
                   for(int j=0;j<nodesNum;j++){
                                r = VVectorCalc.SquareEuclDistanceShiftGap(NodesCopy,j*dimension,point,dimension);
                           if(r<minr){ minr=r; minj = j; }
                   }
                   if(projectionType==PROJECTION_CLOSEST_POINT){
-                  float u = 0f,v = 0f,d,mind = 10000000f, minu = 0f, minv = 0f;
+                  float u = 0f,v = 0f,d,mind = Float.MAX_VALUE, minu = 0f, minv = 0f;
                   int mini = -1;
                   for(int i=0;i<Triangles.length;i++){
                           if((Triangles[i][0]==minj)||(Triangles[i][1]==minj)||(Triangles[i][2]==minj)){
@@ -458,7 +458,7 @@ public static int PROJECTION_CLOSEST_POINT = 1;
 
 
   public int getClosestNode(float point[]){
-  float r, minr = 10000000f;
+  float r, minr = Float.MAX_VALUE;
   int minj = -1;
                   for(int j=0;j<nodesNum;j++){
                                r = VVectorCalc.SquareEuclDistanceShift(NodesCopy,j*dimension,point,dimension);
@@ -468,7 +468,7 @@ public static int PROJECTION_CLOSEST_POINT = 1;
   }
 
   public int getClosestNodeGap(float point[]){
-  float r, minr = 10000000f;
+  float r, minr = Float.MAX_VALUE;
   int minj = -1;
                   for(int j=0;j<nodesNum;j++){
                                r = VVectorCalc.SquareEuclDistanceShiftGap(NodesCopy,j*dimension,point,dimension);
@@ -614,7 +614,7 @@ public static int PROJECTION_CLOSEST_POINT = 1;
 
           int i;
 
-          float minl = 10000000f;
+          float minl = Float.MAX_VALUE;
           float maxl = -1f;
           float meanl = 0f;
           for(i=0;i<Edges.length;i++){
@@ -649,7 +649,7 @@ public static int PROJECTION_CLOSEST_POINT = 1;
   public void fixRElasticity(int mode){
 
           int i;
-          float minl = 10000000f;
+          float minl = Float.MAX_VALUE;
           float maxl = -1f;
           float meanl = 0f;
 
