@@ -3,6 +3,7 @@ package vdaoengine.utils;
 import java.io.*;
 import java.util.*;
 
+import vdaoengine.data.VDataSet;
 import vdaoengine.data.VDataTable;
 import vdaoengine.data.VStatistics;
 
@@ -255,6 +256,58 @@ public static void writeMassif1DToFile(int massif[], String fn){
 		e.printStackTrace();
 	}
 }
+
+public static Vector<Integer> findDistributionOutliersByGapAnalysis(float[] vals, float threshold, float gapValue) {
+	Vector<Integer> outliers = new Vector<Integer>();
+	int inds[] = Algorithms.SortMass(vals);
+	int indsreverse[] = new int[inds.length];
+	for(int i=0;i<inds.length;i++) indsreverse[i] = inds[inds.length-i-1];
+	int maxIndWithGap = -1;
+	for(int k=0;k<indsreverse.length;k++){
+		if(vals[indsreverse[k]]<threshold) break;
+		float gap = vals[indsreverse[k]]/vals[indsreverse[k+1]];
+		//System.out.println(gap);
+		if(gap>=gapValue) maxIndWithGap = k; 
+	}
+	if(maxIndWithGap>=0){
+		for(int k=0;k<=maxIndWithGap;k++)
+			outliers.add(indsreverse[k]);
+	}
+	return outliers;
+}
+
+public static float[] makeLongestTailPositive(float[] vals, float threshold) {
+	float newvals[] = new float[vals.length];
+	int sign = determineTheLongestTale(vals,threshold);
+	for(int i=0;i<vals.length;i++)
+		newvals[i] = vals[i]*sign;
+	return newvals;
+}
+
+public static int[] determineTheLongestTales(VDataSet vd, float thresh){
+	int signs[] = new int[vd.coordCount];
+	for(int i=0;i<vd.coordCount;i++){
+		float vals[] = new float[vd.pointCount];
+		for(int k=0;k<vals.length;k++){
+			vals[k] = vd.massif[k][i];
+		}
+		signs[i] = determineTheLongestTale(vals, thresh);
+	}
+	return signs;
+}
+
+public static int determineTheLongestTale(float vals[], float thresh){
+		int sign = 1;
+		float sumpositive = 0f;
+		float sumnegative = 0f;
+		for(int j=0;j<vals.length;j++)if(!Float.isNaN(vals[j])){
+			if(vals[j]>thresh) sumpositive+=vals[j];
+			if(vals[j]<-thresh) sumnegative+=-vals[j];
+		}
+		if(sumnegative>sumpositive) sign=-1;
+	return sign;
+}
+
 
 
 

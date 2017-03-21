@@ -6,7 +6,7 @@ import java.lang.*;
 import cern.colt.matrix.*;
 import cern.colt.matrix.impl.*;
 import cern.colt.matrix.linalg.*;
-
+import vdaoengine.TableUtils;
 import vdaoengine.data.*;
 import vdaoengine.utils.*;
 
@@ -21,8 +21,9 @@ public class testFastICA1{
 		Algebra alg=new Algebra();
                 //DoubleMatrix2D X = new DenseDoubleMatrix2D(10,10);
 
-                VDataTable vt = vdaoengine.data.io.VDatReadWrite.LoadFromVDatFile("multifactor_test1.dat");
-                VDataSet vd = vdaoengine.utils.VSimpleProcedures.SimplyPreparedDataset(vt,-1);
+                VDataTable vt = vdaoengine.data.io.VDatReadWrite.LoadFromSimpleDatFile("C:/Datas/FastICA_Java/test/pdx1000_ica.txt", true, "\t");
+                TableUtils.findAllNumericalColumns(vt);
+                VDataSet vd = vdaoengine.utils.VSimpleProcedures.SimplyPreparedDatasetWithoutNormalization(vt,-1);
                 DoubleMatrix2D X = new DenseDoubleMatrix2D(vd.coordCount,vd.pointCount);
                 for(int i=0;i<vd.pointCount;i++)
                   for(int j=0;j<vd.coordCount;j++)
@@ -50,9 +51,12 @@ public class testFastICA1{
 
 		// Argument list for fastica :
 		LinkedList arguments = new LinkedList();
+		System.out.println(arguments.size());
 		arguments.add(0,"numOfIC");
 		arguments.add(1,new Integer(2));
                 //arguments.add(1,"2");
+		//arguments.add(2,"lastEig");
+		//arguments.add(3,new Integer(5));
 
 		// fastica :
 		fastica resultICA = new fastica(X,arguments);

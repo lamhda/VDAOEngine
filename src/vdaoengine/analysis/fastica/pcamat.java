@@ -143,8 +143,10 @@ public class pcamat{
 			else
 				throw new ErrParam("Illegal value ["+(String)verbose+"] for parameter: verbose");
 
-
 		int oldDimension = ((DoubleMatrix2D)X).rows();
+		
+		System.out.println("OldDimension = "+oldDimension);
+		
 		if((((Integer)lastEig).intValue() <1) | (((Integer)lastEig).intValue()>oldDimension))
 			throw new ErrParam("Illegal value ["+(Integer)lastEig+"] for parameter: lastEig");
 		if((((Integer)firstEig).intValue()<1) | (((Integer)firstEig).intValue()>((Integer)lastEig).intValue()))
