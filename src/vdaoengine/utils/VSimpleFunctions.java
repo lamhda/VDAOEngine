@@ -346,6 +346,20 @@ public class VSimpleFunctions {
     return r;
   }
   
+  public static float calcZeroCenteredStandardDeviation(float f[]){
+	    float r = 0;
+	    float x = 0;
+	    float x2 = 0;
+	    for(int i=0;i<f.length;i++){
+	      x+=f[i];
+	      x2+=f[i]*f[i];
+	    }
+	    x=0;
+	    r = (float)Math.sqrt((x2/f.length-x*x)*(float)f.length/((float)f.length-1));
+	    return r;
+	  }
+  
+  
   public static float calcStandardDeviationBiggerThan(float f[], float val){
 	    float r = 0;
 	    float x = 0;
@@ -748,6 +762,29 @@ public class VSimpleFunctions {
 			}
 		fw.close();
 	}
+
+	public static VDataTable makeObjectCorrelationTable(VDataTable vt, float correlationThreshold) throws Exception{
+		VDataSet vd = VSimpleProcedures.SimplyPreparedDatasetWithoutNormalization(vt, -1);
+		VDataTable res = new VDataTable();
+		res.addNewColumn("ID", "", "", vt.STRING, "_");
+		res.stringTable = new String[vt.rowCount][1];
+		res.rowCount = vt.rowCount;
+		for(int i=0;i<vt.rowCount;i++){
+			res.stringTable[i][0] = vt.stringTable[i][0];
+			res.addNewColumn(vt.stringTable[i][0], "", "", vt.NUMERICAL, "_");
+		}
+		for(int i=0;i<vt.rowCount;i++)
+			for(int j=0;j<vt.rowCount;j++){
+				float corr = VSimpleFunctions.calcCorrelationCoeff(vd.massif[i], vd.massif[j]);
+				//System.out.println(corr);
+				if(Math.abs(corr)>correlationThreshold)
+					res.stringTable[i][j+1] = ""+corr;
+				else
+					res.stringTable[i][j+1] = "0";
+			}
+		return res;
+	}
+
 	
 	public static void makeCorrelationTableCorrectedForCommonFactor(VDataTable vt, float correlationThreshold, String commonFactor, String fout) throws Exception{
 		VDataSet vd = VSimpleProcedures.SimplyPreparedDatasetWithoutNormalization(vt, -1);
